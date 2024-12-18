@@ -216,6 +216,11 @@ func (p *FilterManagerConfigParser) Parse(any *anypb.Any, callbacks capi.ConfigC
 
 	for _, proto := range plugins {
 		name := proto.Name
+
+		if registerMetrics := pkgPlugins.LoadMetricsCallback(name); registerMetrics != nil {
+			registerMetrics(callbacks)
+		}
+
 		if plugin := pkgPlugins.LoadHTTPFilterFactoryAndParser(name); plugin != nil {
 			config, err := plugin.ConfigParser.Parse(proto.Config)
 			if err != nil {
